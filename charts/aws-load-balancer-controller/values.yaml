@@ -1,0 +1,6 @@
+# Controller Deployment — schedules on system-ng (CriticalAddonsOnly:NoSchedule).
+# Single tolerations block: chart exposes only top-level `tolerations`;
+# webhook is in-Deployment and there are no Helm hook Jobs.
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists

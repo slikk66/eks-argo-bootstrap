@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: aws-load-balancer-controller
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: aws-load-balancer-controller-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: aws-load-balancer-controller
+          repoURL: https://aws.github.io/eks-charts
+          targetRevision: v3.3.0
+          helm:
+            releaseName: aws-load-balancer-controller
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/aws-load-balancer-controller/values.yaml
+            valuesObject:
+              clusterName: '{{metadata.annotations.cluster_name}}'
+              region: '{{metadata.annotations.aws_region}}'
+              serviceAccount:
+                annotations:
+                  eks.amazonaws.com/role-arn: '{{metadata.annotations.alb_role_arn}}'
+      destination:
+        name: '{{name}}'
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
