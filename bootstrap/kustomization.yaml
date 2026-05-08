@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
   - applicationsets/cert-manager.yaml
   - applicationsets/aws-load-balancer-controller.yaml
+  - applicationsets/aws-ebs-csi-driver.yaml
+  - applicationsets/aws-efs-csi-driver.yaml

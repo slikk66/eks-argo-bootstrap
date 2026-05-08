@@ -1,0 +1,7 @@
+# Controller Deployment — schedules on system-ng (CriticalAddonsOnly:NoSchedule).
+# Node DaemonSet uses chart default tolerations (tolerateAllTaints + Exists).
+# IRSA on controller only; node uses EC2 instance profile via eks-pulumi node IAM role.
+controller:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists

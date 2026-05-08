@@ -1,0 +1,12 @@
+# Controller Deployment — schedules on system-ng (CriticalAddonsOnly:NoSchedule).
+# `efs.csi.aws.com/agent-not-ready` is the chart's internal EFS-agent toleration —
+# overriding controller.tolerations drops upstream defaults, so preserve it here.
+# Node DaemonSet uses chart default tolerations (operator: Exists tolerates all taints).
+# IRSA on controller only; node uses EC2 instance profile via eks-pulumi node IAM role.
+# `controller.tags` lives ONLY in the ApplicationSet's helm.valuesObject (annotation-templated).
+controller:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: efs.csi.aws.com/agent-not-ready
+      operator: Exists
