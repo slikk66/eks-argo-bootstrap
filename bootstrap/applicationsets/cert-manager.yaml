@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: cert-manager-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "-10"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: cert-manager
+          repoURL: https://charts.jetstack.io
+          targetRevision: v1.20.2
+          helm:
+            releaseName: cert-manager
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/cert-manager/values.yaml
+      destination:
+        name: '{{name}}'
+        namespace: cert-manager
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

@@ -1,0 +1,15 @@
+# AFK worker artifacts (managed by dangeresque, gitignored per worker rules).
+.dangeresque/runs/
+.dangeresque.pid
+
+# Editor / OS noise
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*~
+
+# Local rendered output (don't commit kustomize output)
+/tmp/
+rendered.yaml
+*.rendered.yaml

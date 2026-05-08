@@ -1,0 +1,19 @@
+# Reusable toleration for CriticalAddonsOnly:NoSchedule (system-ng taint).
+# COPY this block into any chart values.yaml that targets system-ng:
+#
+#   tolerations:
+#     - key: CriticalAddonsOnly
+#       operator: Exists
+#
+# Apply at every Deployment-controlling values key (varies per chart):
+#   - cert-manager: tolerations, webhook.tolerations, cainjector.tolerations, startupapicheck.tolerations
+#   - karpenter:    controller.tolerations
+#   - aws-load-balancer-controller: tolerations
+#   - external-secrets: tolerations, webhook.tolerations, certController.tolerations
+#   - aws-ebs-csi-driver: controller.tolerations  (DaemonSet on data plane uses default tolerations)
+#   - metrics-server: tolerations
+#   - adot-collector / fluent-bit: tolerations  (DaemonSets typically tolerate everything)
+#
+# This file is documentation-only. kustomize does NOT consume it. Copy-paste the snippet above into
+# any new chart's values.yaml; verify against the chart's own values.yaml for the FULL list of
+# toleration keys (controllers, webhooks, jobs, cainjectors, ...) before claiming completeness.

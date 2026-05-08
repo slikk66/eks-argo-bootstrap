@@ -1,0 +1,24 @@
+crds:
+  enabled: true
+  keep: true
+
+# Controller Deployment — schedules on system-ng (CriticalAddonsOnly:NoSchedule).
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+
+webhook:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+cainjector:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+# Helm post-install hook Job — must also tolerate or install hangs on system-ng.
+startupapicheck:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
