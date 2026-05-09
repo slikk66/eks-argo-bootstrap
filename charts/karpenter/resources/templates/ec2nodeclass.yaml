@@ -14,6 +14,11 @@ spec:
         karpenter.sh/discovery: {{ .Values.clusterName | quote }}
   tags:
     karpenter.sh/discovery: {{ .Values.clusterName | quote }}
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpTokens: required
+    httpPutResponseHopLimit: 2
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
