@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: argocd-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: argo-cd
+          repoURL: https://argoproj.github.io/argo-helm
+          targetRevision: 9.5.11
+          helm:
+            releaseName: argocd
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/argocd/values.yaml
+      destination:
+        name: '{{name}}'
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - RespectIgnoreDifferences=true

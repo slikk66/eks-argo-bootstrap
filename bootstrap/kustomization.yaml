@@ -10,3 +10,4 @@ resources:
   - applicationsets/karpenter-resources.yaml
   - applicationsets/metrics-server.yaml
   - applicationsets/fluent-bit.yaml
+  - applicationsets/argocd.yaml

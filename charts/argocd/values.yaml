@@ -1,0 +1,11 @@
+# ArgoCD self-management. eks-pulumi planted the initial install at chart 9.5.11;
+# this Application now owns upgrades. Single global.tolerations is sufficient — every
+# in-chart component (controller, server, repoServer, applicationSet, notifications,
+# dex, redis, redisSecretInit, commitServer) defaults its `tolerations` to
+# `global.tolerations` when unset. The redis-ha SUBCHART has separate values and is
+# NOT used in default standalone mode.
+# No IRSA: ArgoCD itself talks to k8s API + Git, not AWS APIs.
+global:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
