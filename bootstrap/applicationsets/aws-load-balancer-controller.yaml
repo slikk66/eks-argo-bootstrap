@@ -40,6 +40,23 @@ spec:
       destination:
         name: '{{name}}'
         namespace: kube-system
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          name: aws-load-balancer-tls
+          namespace: kube-system
+          jsonPointers:
+            - /data
+        - group: admissionregistration.k8s.io
+          kind: MutatingWebhookConfiguration
+          name: aws-load-balancer-webhook
+          jqPathExpressions:
+            - .webhooks[].clientConfig.caBundle
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: aws-load-balancer-webhook
+          jqPathExpressions:
+            - .webhooks[].clientConfig.caBundle
       syncPolicy:
         automated:
           prune: true
@@ -47,3 +64,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
+          - RespectIgnoreDifferences=true
