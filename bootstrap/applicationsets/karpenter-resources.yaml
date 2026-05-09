@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: karpenter-resources
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: karpenter-resources-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "5"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          path: charts/karpenter/resources
+          helm:
+            releaseName: karpenter-resources
+            valuesObject:
+              clusterName: '{{metadata.annotations.cluster_name}}'
+              karpenterNodeRoleName: '{{metadata.annotations.karpenter_node_role_name}}'
+      destination:
+        name: '{{name}}'
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

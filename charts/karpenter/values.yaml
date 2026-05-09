@@ -1,0 +1,12 @@
+# Karpenter v1.x — Pod Identity (NOT IRSA): no serviceAccount.annotations.eks.amazonaws.com/role-arn here.
+# eks-pulumi binds the Pod Identity association AWS-side to namespace=kube-system, sa=karpenter.
+#
+# Controller Deployment schedules on system-ng (CriticalAddonsOnly:NoSchedule).
+# Top-level `tolerations` is the only key in the v1.x chart — no controller.tolerations,
+# no webhook.tolerations, no Helm post-install Job. Chart default already includes the right
+# toleration; we set it explicitly per project toleration discipline (defensive against
+# upstream default changes). Do NOT override `affinity` — chart default
+# `karpenter.sh/nodepool DoesNotExist` rule prevents Karpenter from landing on its own nodes.
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists

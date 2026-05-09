@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: karpenter
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: karpenter-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "-5"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: karpenter
+          repoURL: public.ecr.aws/karpenter
+          targetRevision: 1.12.0
+          helm:
+            releaseName: karpenter
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/karpenter/values.yaml
+            valuesObject:
+              # Pod Identity (NOT IRSA): do NOT set serviceAccount.annotations.eks.amazonaws.com/role-arn.
+              # eks-pulumi binds the Pod Identity association AWS-side to namespace=kube-system, sa=karpenter.
+              settings:
+                clusterName: '{{metadata.annotations.cluster_name}}'
+                interruptionQueue: '{{metadata.annotations.karpenter_interruption_queue_name}}'
+      destination:
+        name: '{{name}}'
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

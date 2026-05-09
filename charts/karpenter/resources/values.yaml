@@ -1,0 +1,19 @@
+# Required — supplied by the karpenter-resources ApplicationSet's helm.valuesObject
+# (annotation-templated from the cluster Secret).
+clusterName: ""
+karpenterNodeRoleName: ""
+
+ec2NodeClass:
+  amiAlias: al2023@latest
+  blockDeviceVolumeSizeGi: 50
+
+nodePool:
+  expireAfter: 720h
+  consolidationPolicy: WhenEmptyOrUnderutilized
+  consolidateAfter: 1m
+  requirements:
+    arch: [amd64]
+    os: [linux]
+    capacityTypes: [spot, on-demand]
+    instanceCategories: [c, m, r]
+    instanceGenerationGreaterThan: "2"

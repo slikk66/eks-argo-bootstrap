@@ -6,3 +6,5 @@ resources:
   - applicationsets/aws-ebs-csi-driver.yaml
   - applicationsets/aws-efs-csi-driver.yaml
   - applicationsets/external-secrets.yaml
+  - applicationsets/karpenter.yaml
+  - applicationsets/karpenter-resources.yaml
