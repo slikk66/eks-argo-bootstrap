@@ -9,3 +9,15 @@ global:
   tolerations:
     - key: CriticalAddonsOnly
       operator: Exists
+
+# repo-server replicas: chart 9.5.x default is 1. With a single replica, any pod
+# restart leaves the argocd-repo-server Service Endpoints momentarily empty;
+# the application-controller's gRPC client (grpc-go ≥1.66 has a known
+# empty-address regression: grpc-go#7625) then surfaces "produced zero addresses
+# (retried 5 times)" as ComparisonError on every Application — observable as
+# Applications flapping between Synced and Unknown.
+# Two replicas eliminate the empty-Endpoints window.
+# https://github.com/grpc/grpc-go/issues/7625
+# https://github.com/argoproj/argo-cd/issues/16470
+repoServer:
+  replicas: 2
