@@ -1,0 +1,16 @@
+# Controller, webhook, and cert-controller Deployments — schedule on system-ng (CriticalAddonsOnly:NoSchedule).
+# ESO ships its own cert-controller (NOT cert-manager); webhook.certManager.enabled defaults to false.
+# No Helm post-install Job hooks in this chart, so only 3 toleration keys are needed.
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+
+webhook:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+certController:
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists

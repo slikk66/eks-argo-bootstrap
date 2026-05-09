@@ -5,3 +5,4 @@ resources:
   - applicationsets/aws-load-balancer-controller.yaml
   - applicationsets/aws-ebs-csi-driver.yaml
   - applicationsets/aws-efs-csi-driver.yaml
+  - applicationsets/external-secrets.yaml
