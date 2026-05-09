@@ -1,3 +1,11 @@
+<!-- DANGERESQUE-START -->
+**`dangeresque` is installed in this repo.** Use it to orchestrate issue-driven work — managing AI workers, isolated git worktrees, and gated merges — instead of raw `git worktree`, `kill <pid>`, or `cd <worktree>` commands.
+
+- **Workflow primer:** read `.dangeresque/DANGERESQUE.md` or run `dangeresque brief`.
+- **Command surface:** run `dangeresque --help` (auto-generated, never stale).
+- **AFK worker constraints:** `.dangeresque/AFK_WORKER_RULES.md` (mode table, scope rules, status language).
+<!-- DANGERESQUE-END -->
+
 # Project rules — eks-argo-bootstrap
 
 ## Public-repo invariant (HARD)
@@ -67,7 +75,7 @@ See `docs/sync-waves.md`. Use the registry; don't introduce new waves without up
 
 ## Repo URL
 
-`bootstrap/applicationsets/*.yaml` hardcodes `repoURL: https://github.com/slikk66/eks-argo-bootstrap` for the values-ref source. Forks must search-replace; this is documented in `README.md`. Do NOT add a 14th annotation to eks-pulumi — that contract is locked at 13.
+`bootstrap/applicationsets/*.yaml` hardcodes `repoURL: https://github.com/slikk66/eks-argo-bootstrap` for the values-ref source. Forks must search-replace; this is documented in `README.md`. The eks-pulumi annotation contract is currently 14 keys (extended from 13 to add `vpc_id` so ALB Controller can avoid IMDS auto-detect under the hop-limit=1 secure default); extending again should be a deliberate cross-repo PR.
 
 ## Testing
 

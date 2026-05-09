@@ -13,3 +13,4 @@
 /tmp/
 rendered.yaml
 *.rendered.yaml
+.dangeresque/sessions/

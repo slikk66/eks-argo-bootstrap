@@ -54,7 +54,7 @@ The values-ref source's `targetRevision` may be `HEAD` for development; pin to a
 
 ## Repo URL hardcode
 
-`bootstrap/applicationsets/*.yaml` hardcodes `repoURL: https://github.com/slikk66/eks-argo-bootstrap` for the values-ref source. This is intentional — forks search-replace, eks-pulumi contract stays at 13 annotations. Do NOT introduce a 14th annotation for repo URL.
+`bootstrap/applicationsets/*.yaml` hardcodes `repoURL: https://github.com/slikk66/eks-argo-bootstrap` for the values-ref source. This is intentional — forks search-replace. The eks-pulumi annotation contract is currently 14 keys (was 13; extended to add `vpc_id`). Extending again should be a deliberate cross-repo PR, not a slice-internal decision.
 
 ## Deny patterns
 

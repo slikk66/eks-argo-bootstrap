@@ -4,13 +4,14 @@ Public ArgoCD bootstrap repo for EKS clusters provisioned by `eks-pulumi`. No AW
 
 ## Contract with `eks-pulumi`
 
-`eks-pulumi` provisions an in-cluster Secret labeled `argocd.argoproj.io/secret-type=cluster` with these 13 annotations:
+`eks-pulumi` provisions an in-cluster Secret labeled `argocd.argoproj.io/secret-type=cluster` with these 14 annotations:
 
 | Annotation | Provider | Used by |
 |---|---|---|
 | `aws_account_id` | account context | (general) |
 | `aws_region` | account context | karpenter, ALB, fluent-bit |
 | `cluster_name` | cluster identity | karpenter, ALB |
+| `vpc_id` | network identity | aws-load-balancer-controller (explicit; avoids IMDS auto-detect under hop-limit=1) |
 | `karpenter_role_arn` | IRSA | karpenter controller SA |
 | `karpenter_node_role_name` | EC2 role | karpenter NodePool |
 | `karpenter_interruption_queue_name` | SQS | karpenter |
@@ -35,7 +36,7 @@ Every chart in this repo is delivered via one canonical ApplicationSet shape (se
 5. Two-source pattern: `ref: values` source pointing at this repo (`https://github.com/slikk66/eks-argo-bootstrap`) + Helm chart source.
 6. Helm `releaseName: <chart>` set explicitly (default would derive from Application name and break service discovery).
 7. `valueFiles: [$values/charts/<chart>/values.yaml]` for static config.
-8. `valuesObject` for annotation-templated dynamic config (IRSA role ARNs, cluster name, region) — empty for cert-manager since it consumes none of the 13.
+8. `valuesObject` for annotation-templated dynamic config (IRSA role ARNs, cluster name, region, vpc id) — empty for cert-manager since it consumes none of the 14.
 9. `destination.name: '{{name}}'`, `destination.namespace: <chart-namespace>`.
 10. `syncPolicy.automated: { prune: true, selfHeal: true }` and `syncOptions: [CreateNamespace=true, ServerSideApply=true]`.
 11. Helm chart `targetRevision` MUST be a pinned version (`v1.20.2`, NOT `*` / `HEAD` / blank).
@@ -72,7 +73,7 @@ The values-ref source's `repoURL` in `bootstrap/applicationsets/*.yaml` is hardc
 git grep -l 'github.com/slikk66/eks-argo-bootstrap' | xargs sed -i '' 's|github.com/slikk66/eks-argo-bootstrap|github.com/<your-org>/<your-fork>|g'
 ```
 
-The contract with `eks-pulumi` (13 annotations) is locked — forks do not need to add a 14th annotation for the repo URL.
+The contract with `eks-pulumi` (14 annotations) is the sync surface — forks do NOT need to extend it for the repo URL.
 
 ## Local validation
 
