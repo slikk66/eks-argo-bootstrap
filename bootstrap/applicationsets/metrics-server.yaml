@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: metrics-server
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: metrics-server-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: metrics-server
+          repoURL: https://kubernetes-sigs.github.io/metrics-server/
+          targetRevision: 3.13.0
+          helm:
+            releaseName: metrics-server
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/metrics-server/values.yaml
+      destination:
+        name: '{{name}}'
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

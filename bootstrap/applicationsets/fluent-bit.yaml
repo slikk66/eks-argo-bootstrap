@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: fluent-bit
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: fluent-bit-{{name}}
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/slikk66/eks-argo-bootstrap
+          targetRevision: HEAD
+          ref: values
+        - chart: aws-for-fluent-bit
+          repoURL: https://aws.github.io/eks-charts
+          targetRevision: 0.2.0
+          helm:
+            releaseName: fluent-bit
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/charts/fluent-bit/values.yaml
+            valuesObject:
+              serviceAccount:
+                annotations:
+                  eks.amazonaws.com/role-arn: '{{metadata.annotations.fluentbit_role_arn}}'
+              cloudWatchLogs:
+                region: '{{metadata.annotations.aws_region}}'
+                logGroupName: '/aws/eks/{{metadata.annotations.cluster_name}}/fluent-bit'
+      destination:
+        name: '{{name}}'
+        namespace: amazon-cloudwatch
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
