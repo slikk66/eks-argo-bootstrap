@@ -40,13 +40,6 @@ spec:
       destination:
         name: '{{name}}'
         namespace: kube-system
-      ignoreDifferences:
-        - group: apps
-          kind: DaemonSet
-          name: efs-csi-node
-          namespace: kube-system
-          managedFieldsManagers:
-            - kube-controller-manager
       syncPolicy:
         automated:
           prune: true
@@ -54,4 +47,3 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
-          - RespectIgnoreDifferences=true

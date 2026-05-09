@@ -10,3 +10,9 @@ controller:
       operator: Exists
     - key: efs.csi.aws.com/agent-not-ready
       operator: Exists
+
+# Render CSIDriver as a normal templated resource, not a Helm pre-install/pre-upgrade hook.
+# Chart default (true) annotates CSIDriver with helm.sh/hook + resource-policy:keep.
+# ArgoCD doesn't honor resource-policy:keep on hooks (argo-cd#11227) — the App stays
+# OutOfSync and the divergence is mis-attributed to the sibling efs-csi-node DaemonSet.
+useHelmHooksForCSIDriver: false
